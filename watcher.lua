@@ -278,6 +278,10 @@ local function test_detector(detector)
       if in_table(player_list[i], detector.whitelist) then
         table.remove(player_list, i)
       end
+
+      if in_table(player_list[i], conf.global_whitelist) then
+        table.remove(player_list, i)
+      end
     end
 
     -- Check if the players are currently in detected in the alarm group.
@@ -323,40 +327,44 @@ local function test_detector(detector)
     local player_list_dict = {}
 
     for player_name, player_data in pairs(player_datas) do
-      local areas = get_areas(player_data)
+      if not in_table(player_name, conf.global_whitelist) then
+        local areas = get_areas(player_data)
 
-      if #areas > 0 then
-        for _, area in ipairs(areas) do
-          if not alarm_groups.box[area.name] then
-            alarm_groups.box[area.name] = {}
-          end
-          if not groups.box[area.name] then
-            groups.box[area.name] = {}
-          end
+        if #areas > 0 then
+          for _, area in ipairs(areas) do
+            if not in_table(player_name, area.whitelist) then
+              if not alarm_groups.box[area.name] then
+                alarm_groups.box[area.name] = {}
+              end
+              if not groups.box[area.name] then
+                groups.box[area.name] = {}
+              end
 
-          if not alarm_groups.box[area.name][player_name] then
-            -- Mark the player as detected in this area.
-            alarm_groups.box[area.name][player_name] = true
-            groups.box[area.name][player_name] = true
+              if not alarm_groups.box[area.name][player_name] then
+                -- Mark the player as detected in this area.
+                alarm_groups.box[area.name][player_name] = true
+                groups.box[area.name][player_name] = true
 
-            -- Ensure the player is not in the dead group.
-            local was_in_dead = false
-            if not alarm_groups_dead.box[area.name] then
-              alarm_groups_dead.box[area.name] = {}
+                -- Ensure the player is not in the dead group.
+                local was_in_dead = false
+                if not alarm_groups_dead.box[area.name] then
+                  alarm_groups_dead.box[area.name] = {}
+                end
+                if alarm_groups_dead.box[area.name][player_name] then
+                  was_in_dead = true
+                end
+                alarm_groups_dead.box[area.name][player_name] = nil
+
+                -- Log the player activity.
+                if not was_in_dead then
+                  log_box_enter(area, player_name, player_data)
+                end
+              end
+
+              -- Add the player to the list of players detected in boxes.
+              player_list_dict[player_name] = true
             end
-            if alarm_groups_dead.box[area.name][player_name] then
-              was_in_dead = true
-            end
-            alarm_groups_dead.box[area.name][player_name] = nil
-
-            -- Log the player activity.
-            if not was_in_dead then
-              log_box_enter(area, player_name, player_data)
-            end
           end
-
-          -- Add the player to the list of players detected in boxes.
-          player_list_dict[player_name] = true
         end
       end
     end
