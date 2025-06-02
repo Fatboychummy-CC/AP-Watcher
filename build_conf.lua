@@ -296,6 +296,7 @@ local config_str = string.format(
   previous_config.uses_webhook or defaults.uses_webhook,
   previous_config.webhook and previous_config.webhook.name or defaults.webhook.name,
   previous_config.webhook and previous_config.webhook.url or defaults.webhook.url,
+  previous_config.webhook and previous_config.webhook.chunkload_url,
   previous_config.webhook and previous_config.webhook.avatar or defaults.webhook.avatar,
   tab_forward(textutils.serialize(previous_config.log_data or defaults.log_data)),
   tab_forward(textutils.serialize(detectors_config))
