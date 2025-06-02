@@ -20,6 +20,9 @@ This program leverages Advanced Peripherals to monitor when players enter and le
 5. Edit the config file to change information about the areas you want to monitor, and the detectors you want to use.
 6. Run `watcher.lua` to start monitoring.
 
+## Updating
+To update, simply run the installer again with the same command as before, then run the `build_conf.lua` script again to ensure any new configuration options are added to your config file. You can then edit the config file as needed.
+
 # Configuration
 
 `build_conf.lua` will generate a configuration file for you to edit, and can be ran even after you have already set up the watcher with your own configuration file. Old values will be preserved, and a backup of the old configuration file will be created, `build_conf.lua.bak`. If you want to reset the configuration file, you can delete the old one and run `build_conf.lua` again.

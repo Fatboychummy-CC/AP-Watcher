@@ -17,6 +17,7 @@ local config_file = [[---@class Watcher.config
 
 ---@class Watcher.config.Webhook The global webhook to send messages to.
 ---@field url string The URL of the discord webhook to send messages to.
+---@field chunkload_url string? The URL of the discord webhook to send chunkload messages to. If nil, defaults to the base url.
 ---@field name string The name to use for the webhook.
 ---@field avatar string The avatar to use for the webhook.
 
@@ -84,6 +85,9 @@ return {
     -- The URL of the discord webhook to send messages to.
     url = "%s",
 
+    -- The URL of the discord webhook to send chunkload messages to. If nil, defaults to the base url.
+    chunkload_url = "%s",
+
     -- The avatar to use for the webhook.
     avatar = "%s"
   },
@@ -126,6 +130,9 @@ local defaults = {
     -- The URL of the discord webhook to send messages to.
     url = "https://...",
 
+    -- The URL of the discord webhook to send chunkload messages to. If nil, defaults to the base url.
+    chunkload_url = "https://...",
+
     -- The avatar to use for the webhook.
     avatar = "https://..."
   },
@@ -146,7 +153,7 @@ local copied_keys = {
   "watcher_name",
   "log_file",
   "uses_webhook",
-  "webhook",
+  -- "webhook", -- Removed, since we handle this manually.
   "dimension",
   "global_whitelist",
   "exit_timeout",
@@ -222,6 +229,16 @@ if previous_config then
   -- We need to copy keys from the previous config, and determine which detectors are in the old config.
   for _, key in ipairs(copied_keys) do
     defaults[key] = previous_config[key]
+  end
+
+  -- Extra handling for the webhook, since we need to ensure it has the correct structure.
+  if previous_config.webhook then
+    defaults.webhook = {
+      name = previous_config.webhook.name or defaults.webhook.name,
+      url = previous_config.webhook.url or defaults.webhook.url,
+      avatar = previous_config.webhook.avatar or defaults.webhook.avatar,
+      chunkload_url = previous_config.webhook.chunkload_url or defaults.webhook.chunkload_url
+    }
   end
 
   print("Checking for previous player detectors...")
