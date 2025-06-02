@@ -237,7 +237,7 @@ if previous_config then
       name = previous_config.webhook.name or defaults.webhook.name,
       url = previous_config.webhook.url or defaults.webhook.url,
       avatar = previous_config.webhook.avatar or defaults.webhook.avatar,
-      chunkload_url = previous_config.webhook.chunkload_url or defaults.webhook.chunkload_url
+      chunkload_url = previous_config.webhook.chunkload_url -- or defaults.webhook.chunkload_url -- This is allowed to be nil, so we don't set a default.
     }
   end
 

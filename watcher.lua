@@ -625,7 +625,7 @@ local function main_loop()
   if conf.uses_webhook then
     -- Send a startup message to the webhook.
     send_webhook(
-      conf.webhook.chunkload_url,
+      conf.webhook.chunkload_url or conf.webhook.url,
       conf.webhook.name,
       conf.webhook.avatar,
       "**" .. conf.watcher_name .. " was chunkloaded and is now running.**"
