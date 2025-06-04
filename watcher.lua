@@ -208,6 +208,11 @@ end
 ---@param position Watcher.config.Coords.Position The position to test.
 ---@return Watcher.config.LoggedCoords[] areas The logged area(s) that contain the position.
 local function get_areas(position)
+  -- Fix for AP returning nil positions for some reason.
+  if not position or not position.x or not position.y or not position.z then
+    return {}
+  end
+
   local areas = {}
 
   for _, area in ipairs(conf.log_data) do
