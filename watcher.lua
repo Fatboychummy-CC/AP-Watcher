@@ -101,9 +101,9 @@ local function log_radius_enter(player_name, detector, detector_group)
   if detector_group then
     message = ("**%s** entered radius of **%s** \n-# %s (%s, %s)"):format(
       player_name,
-      detector_group,
-      conf.dimension,
       detector.display_name,
+      conf.dimension,
+      detector_group,
       detector.network_name
     )
   else
