@@ -204,6 +204,26 @@ end
 
 
 
+local math_min, math_max = math.min, math.max
+--- Returns the positions as "minimum" and "maximum" coordinates.
+---@param p1 Watcher.config.Coords.Position The first position.
+---@param p2 Watcher.config.Coords.Position The second position.
+---@return Watcher.config.Coords.Position first The first position, with minimum coordinates.
+---@return Watcher.config.Coords.Position second The second position, with maximum coordinates.
+local function get_min_max_positions(p1, p2)
+  return {
+    x = math_min(p1.x, p2.x),
+    y = math_min(p1.y, p2.y),
+    z = math_min(p1.z, p2.z)
+  }, {
+    x = math_max(p1.x, p2.x),
+    y = math_max(p1.y, p2.y),
+    z = math_max(p1.z, p2.z)
+  }
+end
+
+
+
 --- Get all logged areas that contain a given position.
 ---@param position Watcher.config.Coords.Position The position to test.
 ---@return Watcher.config.LoggedCoords[] areas The logged area(s) that contain the position.
@@ -216,9 +236,13 @@ local function get_areas(position)
   local areas = {}
 
   for _, area in ipairs(conf.log_data) do
-    if area.first.x <= position.x and position.x <= area.second.x and
-       area.first.y <= position.y and position.y <= area.second.y and
-       area.first.z <= position.z and position.z <= area.second.z then
+    local p1, p2 = get_min_max_positions(
+      area.first, area.second
+    )
+
+    if p1.x <= position.x and position.x <= p2.x and
+       p1.y <= position.y and position.y <= p2.y and
+       p1.z <= position.z and position.z <= p2.z then
       -- The position is within the area.
       table.insert(areas, area)
     end
