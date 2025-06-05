@@ -4,6 +4,9 @@
 
 local conf = require("watcher-conf")
 
+local VERSION = "1.0.2"
+local RAND_INSTANCE = math.random(1000000, 9999999)
+
 local headers = {
   ["Content-Type"] = "application/json"
 }
@@ -657,7 +660,11 @@ local function main_loop()
       conf.webhook.chunkload_url or conf.webhook.url,
       conf.webhook.name,
       conf.webhook.avatar,
-      "**" .. conf.watcher_name .. " was chunkloaded and is now running.**"
+      ("**%s (v%s - i%d)** was chunkloaded and is now running."):format(
+        conf.watcher_name,
+        VERSION,
+        RAND_INSTANCE
+      )
     )
   end
 
@@ -686,10 +693,15 @@ if not ok then
   log_to_file("Error: " .. tostring(err))
   if conf.uses_webhook then
     send_webhook(
-      conf.webhook.url,
+      conf.webhook.chunkload_url or conf.webhook.url,
       conf.webhook.name,
       conf.webhook.avatar,
-      "**" .. conf.watcher_name .. " encountered an error:**\n```\n" .. tostring(err) .. "\n```"
+      ("**%s (v%s - i%d)** encountered an error:\n```%s\n```"):format(
+        conf.watcher_name,
+        VERSION,
+        RAND_INSTANCE,
+        tostring(err)
+      )
     )
   end
 end
