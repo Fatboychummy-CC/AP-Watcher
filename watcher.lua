@@ -4,7 +4,7 @@
 
 local conf = require("watcher-conf")
 
-local VERSION = "1.0.2"
+local VERSION = "1.0.3"
 local RAND_INSTANCE = math.random(1000000, 9999999)
 
 local headers = {
@@ -291,10 +291,6 @@ local function test_detector(detector)
   --- Handle players detected in the radius around the detector.
   ---@return string[] player_list
   local function handle_radius()
-    if not detector.radius_mode then
-      return {}
-    end
-
     local radius = conf.detector_range
 
     local player_list, err = peripheral.call(detector.network_name, "getPlayersInCubic", radius, radius, radius)
@@ -303,6 +299,11 @@ local function test_detector(detector)
         printError("Error getting players in radius for detector " .. detector.network_name .. ": " .. tostring(err))
       end
       return {}
+    end
+
+    if not detector.radius_mode then
+      -- If the detector is not in radius mode, we just return the player list.
+      return player_list
     end
 
     -- Remove players that are whitelisted for this detector.
@@ -513,6 +514,7 @@ local function check_detectors()
   for _, detector in pairs(conf.player_detectors) do
     local detected_players, dgroups = test_detector(detector)
     if dgroups then
+      -- Box groups
       for group_name, group_players in pairs(dgroups.box) do
         if not groups.box[group_name] then
           groups.box[group_name] = {}
@@ -523,6 +525,7 @@ local function check_detectors()
         end
       end
 
+      -- Radius groups
       for group_name, group_players in pairs(dgroups.radius) do
         if not groups.radius[group_name] then
           groups.radius[group_name] = {}
